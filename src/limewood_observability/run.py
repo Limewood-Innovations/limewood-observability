@@ -334,5 +334,5 @@ class ExternalCallTracker:
 
 
 def _new_uuid_run_id() -> str:
-    """Fallback ID generator. Production uses :func:`alpenland_observability._ulid.new_ulid`."""
+    """Fallback ID generator. Production uses :func:`limewood_observability._ulid.new_ulid`."""
     return uuid.uuid4().hex[:26].upper()

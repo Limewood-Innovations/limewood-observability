@@ -7,13 +7,13 @@ from typing import Iterable
 
 import pytest
 
-from alpenland_observability import (
+from limewood_observability import (
     ExternalCallSnapshot,
     MetricSnapshot,
     Observability,
     RunSnapshot,
 )
-from alpenland_observability.exporters.base import Exporter
+from limewood_observability.exporters.base import Exporter
 
 
 class RecordingExporter(Exporter):
@@ -197,12 +197,12 @@ def test_auto_exporters_falls_back_to_noop(monkeypatch) -> None:
     monkeypatch.delenv("APPLICATIONINSIGHTS_CONNECTION_STRING", raising=False)
     obs = Observability(tool_name="x", app_env="test", attach_json_logger=False)
     assert len(obs.exporters) == 1
-    from alpenland_observability.exporters.base import NoopExporter
+    from limewood_observability.exporters.base import NoopExporter
     assert isinstance(obs.exporters[0], NoopExporter)
 
 
 def test_auto_exporters_picks_up_sql_url(monkeypatch) -> None:
-    pytest.importorskip("alpenland_observability_db")
+    pytest.importorskip("limewood_observability_db")
     monkeypatch.setenv("OBSERVABILITY_SQL_URL", "sqlite:///:memory:")
     monkeypatch.delenv("APPLICATIONINSIGHTS_CONNECTION_STRING", raising=False)
     obs = Observability(tool_name="x", app_env="test", attach_json_logger=False)

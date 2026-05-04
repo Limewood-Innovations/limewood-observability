@@ -22,7 +22,7 @@ class AppInsightsExporter(Exporter):
 
     Args:
         connection_string: Azure Application Insights connection string
-            (from the ``alpenland-monitoring-infra`` Bicep deployment).
+            (from the ``limewood-monitoring-infra`` Bicep deployment).
     """
 
     def __init__(self, connection_string: str) -> None:
@@ -31,7 +31,7 @@ class AppInsightsExporter(Exporter):
         except ImportError as exc:  # pragma: no cover
             raise ImportError(
                 "AppInsightsExporter requires the [appinsights] extra: "
-                "pip install 'alpenland-observability[appinsights]'"
+                "pip install 'limewood-observability[appinsights]'"
             ) from exc
         configure_azure_monitor(connection_string=connection_string)
         # OTel global meter / logger are now configured. We map our domain

@@ -85,7 +85,7 @@ class Observability:
         Discovery order:
 
         1. If ``OBSERVABILITY_SQL_URL`` or ``OBSERVABILITY_SQL_ODBC_CONNECT``
-           is set **and** ``alpenland-observability-db`` is installed →
+           is set **and** ``limewood-observability-db`` is installed →
            add :class:`SqlExporter`.
         2. If ``APPLICATIONINSIGHTS_CONNECTION_STRING`` is set **and**
            ``azure-monitor-opentelemetry`` is installed → add
@@ -98,7 +98,7 @@ class Observability:
         sql_odbc = os.environ.get("OBSERVABILITY_SQL_ODBC_CONNECT")
         if sql_url or sql_odbc:
             try:
-                from alpenland_observability_db import ObservabilityConnector
+                from limewood_observability_db import ObservabilityConnector
 
                 from .exporters.sql import SqlExporter
 
@@ -107,7 +107,7 @@ class Observability:
                 else:
                     connector = ObservabilityConnector.from_url(sql_url)  # type: ignore[arg-type]
                 exporters.append(SqlExporter(connector))
-                _LOGGER.info("alpenland-observability: SqlExporter enabled")
+                _LOGGER.info("limewood-observability: SqlExporter enabled")
             except Exception:
                 _LOGGER.error(
                     "Failed to construct SqlExporter — telemetry will skip SQL",
@@ -120,7 +120,7 @@ class Observability:
                 from .exporters.appinsights import AppInsightsExporter
 
                 exporters.append(AppInsightsExporter(ai_conn))
-                _LOGGER.info("alpenland-observability: AppInsightsExporter enabled")
+                _LOGGER.info("limewood-observability: AppInsightsExporter enabled")
             except Exception:
                 _LOGGER.error(
                     "Failed to construct AppInsightsExporter — telemetry will skip AppInsights",

@@ -1,8 +1,8 @@
 """SQL exporter — writes runs, metrics, and external-call records to MSSQL
-(or any SQLAlchemy-supported DB) via :mod:`alpenland_observability_db`.
+(or any SQLAlchemy-supported DB) via :mod:`limewood_observability_db`.
 
 Construction is decoupled from import-time so the dependency on
-``alpenland-observability-db`` is **optional** (extras = ``[sql]``).
+``limewood-observability-db`` is **optional** (extras = ``[sql]``).
 """
 
 from __future__ import annotations
@@ -13,7 +13,7 @@ from typing import TYPE_CHECKING, Iterable
 from .base import Exporter
 
 if TYPE_CHECKING:
-    from alpenland_observability_db import ObservabilityConnector
+    from limewood_observability_db import ObservabilityConnector
 
     from ..run import ExternalCallSnapshot, MetricSnapshot, RunSnapshot
 
@@ -25,7 +25,7 @@ class SqlExporter(Exporter):
 
     Args:
         connector: A constructed
-            :class:`alpenland_observability_db.ObservabilityConnector`.
+            :class:`limewood_observability_db.ObservabilityConnector`.
         run_migrations: When True, call ``connector.run_migrations()`` on
             construction (creates schema + tables if missing). Default True
             so first-time integrators don't have to remember the step.
@@ -43,7 +43,7 @@ class SqlExporter(Exporter):
                 connector.run_migrations()
             except Exception:
                 _LOGGER.error(
-                    "alpenland-observability SQL exporter: migration failed",
+                    "limewood-observability SQL exporter: migration failed",
                     exc_info=True,
                 )
 
@@ -52,7 +52,7 @@ class SqlExporter(Exporter):
     # ------------------------------------------------------------------
 
     def export_run_started(self, snapshot: "RunSnapshot") -> None:
-        from alpenland_observability_db import RunRecord
+        from limewood_observability_db import RunRecord
         try:
             with self._connector.connect() as c:
                 self._connector.runs.insert(
@@ -71,7 +71,7 @@ class SqlExporter(Exporter):
             _LOGGER.error("SQL export of run_started failed", exc_info=True)
 
     def export_run_finished(self, snapshot: "RunSnapshot") -> None:
-        from alpenland_observability_db import RunFinish
+        from limewood_observability_db import RunFinish
         if snapshot.finished_at is None or snapshot.duration_ms is None:
             _LOGGER.warning(
                 "SQL exporter: run_finished without finished_at/duration — skipped"
@@ -95,7 +95,7 @@ class SqlExporter(Exporter):
             _LOGGER.error("SQL export of run_finished failed", exc_info=True)
 
     def export_metrics(self, samples: Iterable["MetricSnapshot"]) -> None:
-        from alpenland_observability_db import MetricSample
+        from limewood_observability_db import MetricSample
         records = [
             MetricSample(
                 run_id=s.run_id,
@@ -116,7 +116,7 @@ class SqlExporter(Exporter):
             _LOGGER.error("SQL export of metrics failed", exc_info=True)
 
     def export_external_calls(self, calls: Iterable["ExternalCallSnapshot"]) -> None:
-        from alpenland_observability_db import ExternalCallRecord
+        from limewood_observability_db import ExternalCallRecord
         records = [
             ExternalCallRecord(
                 run_id=c.run_id,

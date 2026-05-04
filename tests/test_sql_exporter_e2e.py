@@ -10,15 +10,15 @@ import json
 
 import pytest
 
-# Whole module skips when the optional alpenland-observability-db dep is missing
+# Whole module skips when the optional limewood-observability-db dep is missing
 # (e.g. CI without the cross-repo PAT for the private dependency).
-pytest.importorskip("alpenland_observability_db")
+pytest.importorskip("limewood_observability_db")
 
-from alpenland_observability_db import ObservabilityConnector  # noqa: E402
+from limewood_observability_db import ObservabilityConnector  # noqa: E402
 from sqlalchemy import select  # noqa: E402
 
-from alpenland_observability import Observability  # noqa: E402
-from alpenland_observability.exporters.sql import SqlExporter  # noqa: E402
+from limewood_observability import Observability  # noqa: E402
+from limewood_observability.exporters.sql import SqlExporter  # noqa: E402
 
 
 @pytest.fixture

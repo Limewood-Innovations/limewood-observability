@@ -3,7 +3,7 @@ requires = ["hatchling>=1.21"]
 build-backend = "hatchling.build"
 
 [project]
-name = "alpenland-observability"
+name = "limewood-observability"
 version = "0.1.0"
 description = "Three-line observability for all Alpenland tools (runs, metrics, external calls)."
 readme = "README.md"
@@ -23,14 +23,14 @@ classifiers = [
 dependencies = []
 
 [project.optional-dependencies]
-sql = ["alpenland-observability-db>=0.1.0"]
+sql = ["limewood-observability-db>=0.1.0"]
 appinsights = ["azure-monitor-opentelemetry>=1.6"]
 all = [
-    "alpenland-observability-db>=0.1.0",
+    "limewood-observability-db>=0.1.0",
     "azure-monitor-opentelemetry>=1.6",
 ]
 dev = [
-    "alpenland-observability-db>=0.1.0",
+    "limewood-observability-db>=0.1.0",
     "pytest>=8",
     "pytest-asyncio>=0.23",
     "ruff>=0.4",
@@ -38,10 +38,10 @@ dev = [
 ]
 
 [project.urls]
-Homepage = "https://github.com/Limewood-Innovations/alpenland-observability"
+Homepage = "https://github.com/Limewood-Innovations/limewood-observability"
 
 [tool.hatch.build.targets.wheel]
-packages = ["src/alpenland_observability"]
+packages = ["src/limewood_observability"]
 
 [tool.pytest.ini_options]
 asyncio_mode = "auto"

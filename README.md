@@ -1,14 +1,14 @@
-# alpenland-observability
+# limewood-observability
 
-[![ci](https://github.com/Limewood-Innovations/alpenland-observability/actions/workflows/ci.yml/badge.svg)](https://github.com/Limewood-Innovations/alpenland-observability/actions/workflows/ci.yml)
+[![ci](https://github.com/Limewood-Innovations/limewood-observability/actions/workflows/ci.yml/badge.svg)](https://github.com/Limewood-Innovations/limewood-observability/actions/workflows/ci.yml)
 
 Three-line observability for all 24 Alpenland tools.
 
 Implements the consumer-facing API of [[Alpenland — Observability Concept]].
 Pairs with:
 
-- [`alpenland-observability-db`](https://github.com/Limewood-Innovations/alpenland-observability-db) — DB tier
-- [`alpenland-monitoring-infra`](https://github.com/Limewood-Innovations/alpenland-monitoring-infra) — Bicep IaC
+- [`limewood-observability-db`](https://github.com/Limewood-Innovations/limewood-observability-db) — DB tier
+- [`limewood-monitoring-infra`](https://github.com/Limewood-Innovations/limewood-monitoring-infra) — Bicep IaC
 
 ## What it does
 
@@ -19,7 +19,7 @@ For each tool invocation:
 * **external**   — outbound HTTP/DB call ledger (target, operation, status, duration)
 * **logging**    — JSON formatter that auto-injects `run_id` into every record
 
-All four feed the same sinks (SQL via `alpenland-observability-db`, optional
+All four feed the same sinks (SQL via `limewood-observability-db`, optional
 Application Insights). Drop-in for batch jobs (one run per process) and
 long-running services (one run per business operation).
 
@@ -27,22 +27,22 @@ long-running services (one run per business operation).
 
 ```bash
 # minimal: no exporters, every call is a no-op (useful in tests)
-pip install alpenland-observability
+pip install limewood-observability
 
 # with the SQL exporter for the cold-path MSSQL store
-pip install "alpenland-observability[sql]"
+pip install "limewood-observability[sql]"
 
 # with the AppInsights/OTLP exporter for the hot-path
-pip install "alpenland-observability[appinsights]"
+pip install "limewood-observability[appinsights]"
 
 # everything
-pip install "alpenland-observability[all]"
+pip install "limewood-observability[all]"
 ```
 
 ## Three-line adoption
 
 ```python
-from alpenland_observability import Observability
+from limewood_observability import Observability
 obs = Observability(tool_name="hermes", app_env=os.environ["APP_ENV"])
 async with obs.run() as run:
     await existing_main()
@@ -98,7 +98,7 @@ and a single ERROR is logged. Telemetry must never break business workflows.
                                    │       │
                 ┌──────────────────┘       └──────────────────┐
                 ▼                                              ▼
-  alpenland-observability-db                         azure-monitor-opentelemetry
+  limewood-observability-db                         azure-monitor-opentelemetry
   (MSSQL observability schema)                       (Application Insights)
 ```
 
@@ -110,4 +110,4 @@ pytest -q
 ```
 
 Tests use the `noop` exporter (default when no env vars are set) plus the
-`sql` exporter against in-memory SQLite via `alpenland-observability-db`.
+`sql` exporter against in-memory SQLite via `limewood-observability-db`.

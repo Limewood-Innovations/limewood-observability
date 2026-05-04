@@ -1,4 +1,4 @@
-"""alpenland-observability — runs, metrics, and external-call ledger for all
+"""limewood-observability — runs, metrics, and external-call ledger for all
 Alpenland tools."""
 
 from __future__ import annotations
@@ -18,7 +18,7 @@ from .run import (
 )
 
 try:
-    __version__ = _v("alpenland-observability")
+    __version__ = _v("limewood-observability")
 except PackageNotFoundError:  # pragma: no cover
     __version__ = "0.0.0+local"
 
