@@ -9,11 +9,16 @@ from __future__ import annotations
 import json
 
 import pytest
-from alpenland_observability_db import ObservabilityConnector
-from sqlalchemy import select
 
-from alpenland_observability import Observability
-from alpenland_observability.exporters.sql import SqlExporter
+# Whole module skips when the optional alpenland-observability-db dep is missing
+# (e.g. CI without the cross-repo PAT for the private dependency).
+pytest.importorskip("alpenland_observability_db")
+
+from alpenland_observability_db import ObservabilityConnector  # noqa: E402
+from sqlalchemy import select  # noqa: E402
+
+from alpenland_observability import Observability  # noqa: E402
+from alpenland_observability.exporters.sql import SqlExporter  # noqa: E402
 
 
 @pytest.fixture

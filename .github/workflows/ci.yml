@@ -20,11 +20,15 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      # We depend on a sibling private repo. Check it out alongside this repo
-      # and install editable. Requires a fine-grained PAT with read access to
-      # `Limewood-Innovations/alpenland-observability-db`, stored as the org
-      # secret `OBS_DB_READ_TOKEN`.
-      - uses: actions/checkout@v4
+      # Cross-repo install of the private sibling `alpenland-observability-db`.
+      # Requires an org secret OBS_DB_READ_TOKEN (fine-grained PAT with read
+      # access). When the secret is missing, we skip this step — the
+      # SQL-exporter tests are then auto-skipped via pytest.importorskip().
+      - name: Checkout observability-db (private dep)
+        if: ${{ env.HAVE_TOKEN == 'true' }}
+        env:
+          HAVE_TOKEN: ${{ secrets.OBS_DB_READ_TOKEN != '' }}
+        uses: actions/checkout@v4
         with:
           repository: Limewood-Innovations/alpenland-observability-db
           path: ./_deps/alpenland-observability-db
@@ -38,9 +42,14 @@ jobs:
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
-          pip install -e ./_deps/alpenland-observability-db
+          if [ -d ./_deps/alpenland-observability-db ]; then
+            echo "::notice::Installing alpenland-observability-db from PAT-checked-out source"
+            pip install -e ./_deps/alpenland-observability-db
+          else
+            echo "::warning::OBS_DB_READ_TOKEN not configured — SQL-exporter tests will be skipped."
+          fi
           pip install -e .
-          pip install pytest pytest-asyncio ruff mypy
+          pip install pytest pytest-asyncio
 
       - name: Run pytest
         run: pytest -q --tb=short

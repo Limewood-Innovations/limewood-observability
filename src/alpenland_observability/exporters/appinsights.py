@@ -56,7 +56,6 @@ class AppInsightsExporter(Exporter):
         )
 
     def export_metrics(self, samples: Iterable["MetricSnapshot"]) -> None:
-        from opentelemetry import metrics as _m
         for s in samples:
             counter = self._counters.get(s.metric_name)
             if counter is None:

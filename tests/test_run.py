@@ -202,11 +202,9 @@ def test_auto_exporters_falls_back_to_noop(monkeypatch) -> None:
 
 
 def test_auto_exporters_picks_up_sql_url(monkeypatch) -> None:
+    pytest.importorskip("alpenland_observability_db")
     monkeypatch.setenv("OBSERVABILITY_SQL_URL", "sqlite:///:memory:")
     monkeypatch.delenv("APPLICATIONINSIGHTS_CONNECTION_STRING", raising=False)
-    # alpenland_observability_db is installed in dev extras, so this should
-    # pick up SqlExporter instead of NoopExporter.
     obs = Observability(tool_name="x", app_env="test", attach_json_logger=False)
-    from alpenland_observability.exporters.sql import SqlExporter
     types = {type(e).__name__ for e in obs.exporters}
     assert "SqlExporter" in types
