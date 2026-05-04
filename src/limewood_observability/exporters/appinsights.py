@@ -2,6 +2,23 @@
 
 Thin wrapper over the OpenTelemetry distro. Constructed lazily so the
 ``azure-monitor-opentelemetry`` dependency is **optional** (extras = ``[appinsights]``).
+
+AppInsights table mapping (important for KQL — query the right tables):
+
+================================  =============================================
+What we emit                      AppInsights table
+================================  =============================================
+``alpenland.run.started``         ``traces``    (OTel logs land here, NOT in
+``alpenland.run.finished``                       ``customEvents`` — that table
+``alpenland.external_call``                       is for the legacy
+                                                   ``track_event`` API which
+                                                   this exporter does not use)
+counter ``alpenland.<metric>``    ``customMetrics``
+================================  =============================================
+
+Operator Guide §5b has the corresponding KQL recipes against the
+``traces`` + ``customMetrics`` tables. ``customEvents`` will be empty
+unless something else in your tenant is calling the legacy track-event API.
 """
 
 from __future__ import annotations
