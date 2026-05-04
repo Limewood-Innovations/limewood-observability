@@ -1,0 +1,56 @@
+name: ci
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    name: pytest (py${{ matrix.python }})
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python: ["3.9", "3.10", "3.11", "3.12"]
+    steps:
+      - uses: actions/checkout@v4
+
+      # We depend on a sibling private repo. Check it out alongside this repo
+      # and install editable. Requires a fine-grained PAT with read access to
+      # `Limewood-Innovations/alpenland-observability-db`, stored as the org
+      # secret `OBS_DB_READ_TOKEN`.
+      - uses: actions/checkout@v4
+        with:
+          repository: Limewood-Innovations/alpenland-observability-db
+          path: ./_deps/alpenland-observability-db
+          token: ${{ secrets.OBS_DB_READ_TOKEN }}
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python }}
+          cache: pip
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -e ./_deps/alpenland-observability-db
+          pip install -e .
+          pip install pytest pytest-asyncio ruff mypy
+
+      - name: Run pytest
+        run: pytest -q --tb=short
+
+  lint:
+    name: ruff
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: { python-version: "3.12", cache: pip }
+      - run: pip install ruff>=0.4
+      - run: ruff check src tests

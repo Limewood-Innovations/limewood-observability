@@ -1,5 +1,7 @@
 # alpenland-observability
 
+[![ci](https://github.com/Limewood-Innovations/alpenland-observability/actions/workflows/ci.yml/badge.svg)](https://github.com/Limewood-Innovations/alpenland-observability/actions/workflows/ci.yml)
+
 Three-line observability for all 24 Alpenland tools.
 
 Implements the consumer-facing API of [[Alpenland — Observability Concept]].
