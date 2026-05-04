@@ -1,0 +1,48 @@
+[build-system]
+requires = ["hatchling>=1.21"]
+build-backend = "hatchling.build"
+
+[project]
+name = "alpenland-observability"
+version = "0.1.0"
+description = "Three-line observability for all Alpenland tools (runs, metrics, external calls)."
+readme = "README.md"
+requires-python = ">=3.9"
+license = { text = "MIT" }
+authors = [{ name = "Alpenland", email = "it@alpenland.local" }]
+keywords = ["alpenland", "observability", "monitoring", "telemetry"]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3 :: Only",
+    "Topic :: System :: Logging",
+    "Topic :: System :: Monitoring",
+]
+# No required deps — exporters are opt-in via extras.
+dependencies = []
+
+[project.optional-dependencies]
+sql = ["alpenland-observability-db>=0.1.0"]
+appinsights = ["azure-monitor-opentelemetry>=1.6"]
+all = [
+    "alpenland-observability-db>=0.1.0",
+    "azure-monitor-opentelemetry>=1.6",
+]
+dev = [
+    "alpenland-observability-db>=0.1.0",
+    "pytest>=8",
+    "pytest-asyncio>=0.23",
+    "ruff>=0.4",
+    "mypy>=1.8",
+]
+
+[project.urls]
+Homepage = "https://github.com/Limewood-Innovations/alpenland-observability"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/alpenland_observability"]
+
+[tool.pytest.ini_options]
+asyncio_mode = "auto"
+testpaths = ["tests"]
