@@ -27,8 +27,13 @@ class SqlExporter(Exporter):
         connector: A constructed
             :class:`limewood_observability_db.ObservabilityConnector`.
         run_migrations: When True, call ``connector.run_migrations()`` on
-            construction (creates schema + tables if missing). Default True
-            so first-time integrators don't have to remember the step.
+            construction. Default True so first-time integrators (e.g. tests
+            against in-memory SQLite) don't have to remember the step.
+            **In production**, the schema is typically pre-created by an
+            operator running with admin credentials — tools then connect
+            with a least-privilege role that lacks DDL. Migration calls
+            from a least-privilege role are caught and downgraded to an
+            INFO log; other migration failures still surface as ERROR.
     """
 
     def __init__(
@@ -41,11 +46,25 @@ class SqlExporter(Exporter):
         if run_migrations:
             try:
                 connector.run_migrations()
-            except Exception:
-                _LOGGER.error(
-                    "limewood-observability SQL exporter: migration failed",
-                    exc_info=True,
-                )
+            except Exception as exc:
+                # Common case in production: writer role has no DDL rights.
+                # Schema is supposed to be pre-created by the operator (e.g.
+                # via limewood-monitoring-infra/scripts/setup-postgres.sh).
+                # Recognise the error by name (no hard import dep on psycopg
+                # here — works for any DBAPI that surfaces "permission denied").
+                exc_class = type(exc).__name__
+                exc_msg = str(exc).lower()
+                if "InsufficientPrivilege" in exc_class or "permission denied" in exc_msg:
+                    _LOGGER.info(
+                        "Skipping schema migration — writer role lacks DDL. "
+                        "Assuming schema was pre-created by an operator. (%s)",
+                        exc_class,
+                    )
+                else:
+                    _LOGGER.error(
+                        "limewood-observability SQL exporter: migration failed",
+                        exc_info=True,
+                    )
 
     # ------------------------------------------------------------------
     # Exporter protocol
